@@ -1,12 +1,11 @@
+
+An open source developer friendly, tracker free, ad free, fancy proxy free mail client for desktop.
+
      _____     __  __          _   _
     ,\   /|   |  \/  |  __ _  (_) | |    _  _   _ __
     | \ / |   | |\/| | / _' | | | | |   | || | | '_ \
     |/ v \|   |_|  |_| \__,_| |_| |_|    \_,_| | .__/
     '_____'                                    |_|
-
-
-
-An open source developer friendly, tracker free, ad free, fancy proxy free mail client for desktop.
 
 Made with ♥ by [Jonathan Sanchez Pando](http://github.com/j-san/). All contributions are welcome.
 
