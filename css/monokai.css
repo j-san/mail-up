@@ -1,0 +1,118 @@
+@font-face {
+  font-family: "Menlo";
+  src: url("./fonts/Menlo-Regular.ttf");
+}
+@font-face {
+  font-family: "Book Antiqua";
+  src: url("./fonts/Book-Antiqua-Regular.ttf");
+}
+
+body {
+  font-family: "Menlo", monospace;
+  /*font-family: "Palatino Linotype", "Book Antiqua", Palatino, FreeSerif, serif;*/
+  font-size: 15px;
+  line-height: 22px;
+  background: #272822;
+  color: #f8f8f0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Menlo", monospace;
+  font-size: 15px;
+  margin: 0;
+  color: #46830c;
+}
+
+pre, tt, code {
+  color: inherit;
+  background-color: inherit;
+  border: inherit;
+  font-size: 12px;
+  line-height: 14px;
+}
+
+a, a:hover, a:focus, a.active {
+  color: #66d9ef;
+  text-decoration: none;
+}
+
+a:hover, a:focus, a.active {
+  background-color: #49483e;
+}
+
+a.media {
+  border-bottom: 1px solid #75715e;
+  color: #a6e22e;
+}
+a.media .Seen {
+  color: #66d9ef;
+}
+.btn-default {
+  color: #f8f8f0;
+  background-color: transparent;
+  border-color: #75715e;
+}
+
+.full-width {
+  background: #272822;
+}
+.message-view {
+  border-left: 1px solid #f8f8f0;
+  padding: 10px;
+}
+.message-headers {
+  color: #fd971f;
+}
+.message-body {
+  color: #66d9ef;
+}
+.message-body pre {
+  font-size: 16px;
+}
+.form-control {
+  color: white;
+  background-color: #3c3d37;
+}
+
+ul, ol {
+  padding-left: 20px;
+}
+ul li, ol li {
+  list-style-type: none;
+  white-space: pre;
+  // list-style-type: square;
+}
+ul li h2, 
+ul li h3,
+ul li h4 {
+  display: inline-block;
+}
+ul li:before,
+ol li:before {
+  content: '- ';
+  display: inline-block;
+  // list-style-type: square;
+}
+/*
+#204a87
+#243955
+#272822
+#31322c
+#3c3d37
+#46830c
+#49483e
+#64645e
+#66d9ef
+#75715e
+#8b0807
+#90908a
+#a6e22e
+#ae81ff
+#e6db74
+#f8f8f0
+#f8f8f2
+#f92672
+#fd971f
+*/
+
+

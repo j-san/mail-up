@@ -1,0 +1,104 @@
+@import '../node_modules/bootstrap/dist/css/bootstrap.css';
+
+
+body {
+  margin: 0;
+  padding: 0;
+  white-space: pre-wrap;
+  font-family: monospace;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 15px 0;
+}
+
+pre, tt, code {
+  white-space: pre-wrap;
+}
+
+/* page layout */
+.page-header {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: 5px;
+  margin: 0;
+  line-height: 10px;
+  font-size: 10px;
+}
+
+.page-content {
+  position: absolute;
+  top: 70px;
+  bottom: 0;
+  padding: 5px;
+  overflow: hidden;
+  width: 100%;
+}
+.page-content > * {
+  height: 100%;
+  overflow-y: auto;
+  padding: 0;
+}
+.page-content .side-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 33%;
+  bottom: 0;
+  overflow-y: auto;
+  border-right: 1px solid #eee;
+}
+.page-content .side-content + * {
+  position: absolute;
+  top: 0;
+  left: 33%;
+  width: 67%;
+  bottom: 0;
+  overflow-y: auto;
+}
+.page-content .full-width {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  bottom: 0;
+  overflow-y: auto;
+}
+
+/* components */
+.media {
+  display: block;
+  margin-top: 0;
+  padding: 2px 5px;
+}
+.btn {
+  padding: 2px 8px;
+}
+.margined {
+  margin-left: 10px;
+}
+
+@-webkit-keyframes loading {
+  0%  { content: "Loading.  "; }
+  33% { content: "Loading.. "; }
+  66% { content: "Loading..."; }
+}
+
+.loading::after {
+  -webkit-animation: loading 3s infinite;
+}
+
+
+/* specific */
+.message-list {
+  padding: 0;
+}
+.alternatives {
+  width: 100%;
+  padding: 10px 0;
+  text-align: center;
+}
+.message-body iframe {
+  background-color: white;
+}
