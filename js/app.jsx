@@ -1,6 +1,4 @@
 
-
-// var $ = require('jquery');
 var React = require('react');
 var ReactDOM = require('react-dom');
 var {Route, Switch} = require('react-router');
@@ -15,6 +13,7 @@ var MailStore = require('./models/MailStore');
 var Mailbox = require('./components/Mailbox.jsx');
 var WriteMessage = require('./components/WriteMessage.jsx');
 var Configure = require('./components/Configure.jsx');
+var Password = require('./components/Password.jsx');
 var Header = require('./components/Header.jsx');
 var About = require('./components/About.jsx');
 var Help = require('./components/Help.jsx');
@@ -23,12 +22,18 @@ var Help = require('./components/Help.jsx');
 var store = {};
 
 store.configuration = new Configuration();
-store.configuration.fetch();
+store.configuration.load();
 
 store.accounts = store.configuration.accounts.map((config)=> {
-    var store = new MailStore(config);
-    store.connect();
-    return store;
+    var mailStore = new MailStore(config);
+
+    mailStore.password = store.configuration.passwords[config.user];
+    if (!mailStore.password) {
+        location.assign('#/password');
+    } else {
+        mailStore.connect();
+    }
+    return mailStore;
 });
 
 RunCommandMixin.init([{
@@ -110,12 +115,22 @@ ReactDOM.render(<HashRouter>
                     return <Mailbox accounts={store.accounts} selected={selected} />;
                 }}>
                 </Route>
+                <Route path="/password" render={()=> {
+                    return <Password configuration={store.configuration} onSave={()=> {
+                        store.configuration.save();
+                        location.assign('#/messages');
+                    }} />;
+                }}>
+                </Route>
                 <Route path="/messages" render={()=> {
                     return <Mailbox accounts={store.accounts} />;
                 }}>
                 </Route>
                 <Route path="/configure" render={()=> {
-                    return <Configure model={store.configuration} />;
+                    return <Configure model={store.configuration} onSave={()=> {
+                        store.configuration.save();
+                        location.assign('#/messages');
+                    }} />;
                 }}>
                 </Route>
                 <Route render={()=> {

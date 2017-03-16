@@ -32,7 +32,7 @@ module.exports = class MailStore {
                 {
                     auth: {
                         user: this.config.user,
-                        pass: this.config.password
+                        pass: this.config.password || this.password
                     },
                     id: {
                         name: pkg.name,
