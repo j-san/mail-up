@@ -71,6 +71,76 @@ ReactDOM.render(<HashRouter>
         <Header />
         <div className="page-content">
             <Switch>
+                <Route path="/messages" exact render={()=> {
+                    return <Mailbox accounts={store.accounts} />;
+                }}>
+                </Route>
+                <Route path="/messages/previous" render={()=> {
+                    store.accounts.selected.messages.selectPrevious();
+                    location.assign('#/messages/' + store.accounts.selected.messages.selected.id);
+                    return null;
+                }}>
+                </Route>
+                <Route path="/messages/next" render={()=> {
+                    store.accounts.selected.messages.selectNext();
+                    location.assign('#/messages/' + store.accounts.selected.messages.selected.id);
+                    return null;
+                }}>
+                </Route>
+                <Route path="/messages/:id/reply" render={({match: {params}})=> {
+                    var selected = store.accounts[0].findMessageById(params.id);
+
+                    store.edit = new Message();
+                    store.edit.envelope = Object.assign({}, selected.envelope);
+                    delete store.edit.envelope['reply-to'];
+                    delete store.edit.envelope['cc'];
+                    delete store.edit.envelope.date;
+                    delete store.edit.envelope.sender;
+                    store.edit.envelope.to = [(selected.envelope['reply-to'] || selected.envelope.from)];
+                    store.edit.envelope.from = store.accounts[0].config.user;
+                    store.edit.body = selected.body;
+                    location.assign('#/write');
+                    return null;
+                }}>
+                </Route>
+                <Route path="/messages/:id/forward" render={({match: {params}})=> {
+                    var selected = store.accounts[0].findMessageById(params.id);
+
+                    store.edit = new Message();
+                    store.edit.envelope = Object.assign({}, selected.envelope);
+                    delete store.edit.envelope['reply-to'];
+                    delete store.edit.envelope.date;
+                    delete store.edit.envelope.sender;
+                    store.edit.envelope.from = store.accounts[0].config.user;
+                    store.edit.envelope.to = '';
+                    store.edit.body = selected.body;
+                    location.assign('#/write');
+                    return null;
+                }}>
+                </Route>
+                <Route path="/messages/:id/reply-all" render={({match: {params}})=> {
+                    var selected = store.accounts[0].findMessageById(params.id);
+
+                    store.edit = new Message();
+                    store.edit.envelope = Object.assign({}, selected.envelope);
+                    delete store.edit.envelope['reply-to'];
+                    delete store.edit.envelope.date;
+                    delete store.edit.envelope.sender;
+                    store.edit.envelope.from = store.accounts[0].config.user;
+                    store.edit.envelope.to = [(selected.envelope['reply-to'] || selected.envelope.from)];
+                    store.edit.body = selected.body;
+                    location.assign('#/write');
+                    return null;
+                }}>
+                </Route>
+                <Route path="/messages/:id" render={({match: {params}})=> {
+                    var selected = store.accounts[0].findMessageById(params.id);
+                    if (selected) {
+                        store.accounts[0].loadMessage(selected);
+                    }
+                    return <Mailbox accounts={store.accounts} selected={selected} />;
+                }}>
+                </Route>
                 <Route path="/write" render={()=> {
                     if (!store.edit) {
                         store.edit = new Message();
@@ -86,44 +156,11 @@ ReactDOM.render(<HashRouter>
                     }} />;
                 }}>
                 </Route>
-                <Route path="/about" render={()=> {
-                    return <About />;
-                }}>
-                </Route>
-                <Route path="/help" render={()=> {
-                    return <Help />;
-                }}>
-                </Route>
-                <Route path="/messages/previous" render={()=> {
-                    store.accounts.selected.messages.selectPrevious();
-                    location.assign('#/messages/' + store.accounts.selected.messages.selected.id);
-                    return null;
-                }}>
-                </Route>
-                <Route path="/messages/next" render={()=> {
-                    store.accounts.selected.messages.selectNext();
-                    location.assign('#/messages/' + store.accounts.selected.messages.selected.id);
-                    return null;
-                }}>
-                </Route>
-                <Route path="/messages/:id" render={({match: {params}})=> {
-                    var selected = store.accounts[0].findMessageById(params.id);
-
-                    if (selected) {
-                        store.accounts[0].loadMessage(selected);
-                    }
-                    return <Mailbox accounts={store.accounts} selected={selected} />;
-                }}>
-                </Route>
                 <Route path="/password" render={()=> {
                     return <Password configuration={store.configuration} onSave={()=> {
                         store.configuration.save();
                         location.assign('#/messages');
                     }} />;
-                }}>
-                </Route>
-                <Route path="/messages" render={()=> {
-                    return <Mailbox accounts={store.accounts} />;
                 }}>
                 </Route>
                 <Route path="/configure" render={()=> {
@@ -133,8 +170,16 @@ ReactDOM.render(<HashRouter>
                     }} />;
                 }}>
                 </Route>
-                <Route render={()=> {
-                    console.log('not found')
+                <Route path="/about" render={()=> {
+                    return <About />;
+                }}>
+                </Route>
+                <Route path="/help" render={()=> {
+                    return <Help />;
+                }}>
+                </Route>
+                <Route render={({location: loc})=> {
+                    console.log('not found', loc.pathname);
                     location.assign('#/messages');
                     return null;
                 }}>

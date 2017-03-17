@@ -7,7 +7,7 @@ An open source developer friendly, tracker free, ad free, fancy proxy free mail 
     |/ v \|   |_|  |_| \__,_| |_| |_|    \_,_| | .__/
     '_____'                                    |_|
 
-Made with ♥ by [Jonathan Sanchez Pando](http://github.com/j-san/). All contributions are welcome.
+Made with ♥ by [Jonathan Sanchez Pando](http://github.com/j-san/). **All contributions are welcome.**
 
 
 ## Goal

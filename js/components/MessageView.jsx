@@ -35,6 +35,11 @@ module.exports = observer(class MessageView extends React.Component {
             content = <div className="message-content">
                 <div className="message-envelope">
                     <Envelope model={envelope} />
+                    <a href={`#/messages/${this.props.model.id}/reply`} title="reply">R</a>
+                    {'  '}
+                    <a href={`#/messages/${this.props.model.id}/forward`} title="forward">F</a>
+                    {'  '}
+                    <a href={`#/messages/${this.props.model.id}/reply-all`} title="reply all">RA</a>
                 </div>
                 <Body body={body} />
             </div>;
