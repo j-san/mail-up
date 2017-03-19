@@ -15,7 +15,7 @@ module.exports = observer(class WriteMessage extends React.Component {
     componentWillMount() {
         this.header = JSON.stringify(this.props.model.envelope, null, 2);
     }
-    componentDidReceiveProps() {
+    componentWillReceiveProps() {
         this.header = JSON.stringify(this.props.model.envelope, null, 2);
     }
 

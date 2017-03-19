@@ -8,12 +8,13 @@ var Message = require('./Message');
 var pkg = require('../../package');
 
 
-module.exports = class MailStore {
+module.exports = class MailAccount {
 
     constructor(config) {
         this.config = config;
         extendObservable(this, {
-            status: '',
+            status: 'close',
+            error: '',
             messages: [],
             mailfolders: []
         });
@@ -25,6 +26,7 @@ module.exports = class MailStore {
     }
 
     connect() {
+        this.error = '';
         this.status = 'connecting...';
 
         if (this.config.imap) {
@@ -45,14 +47,13 @@ module.exports = class MailStore {
 
             // this.client.logLevel = this.client.LOG_LEVEL_DEBUG;
             this.client.logLevel = this.client.LOG_LEVEL_INFO;
-            this.client.onerror = this.error.bind(this);
-            this.client.onclose = this.closed.bind(this);
-            this.client.onupdate = this.updated.bind(this);
+            this.client.onerror = this._error.bind(this);
+            this.client.onupdate = this._updated.bind(this);
 
             // console.log('connect');
             this.client.connect().then(()=> {
-                this.authenticated();
-            });
+                this._authenticated();
+            }, this._error.bind(this));
         }
 
         if (this.config.smtp) {
@@ -73,19 +74,22 @@ module.exports = class MailStore {
             this.smtp.logLevel = this.smtp.LOG_LEVEL_INFO;
         }
     }
+    disconnect() {
+        this.client.logout().then(()=> {
+            this.client.close().then(()=> {
+                this.status = 'close';
+            });
+        })
+        this.smtp.close();
+    }
 
-    error(err) {
+    _error(err) {
         this.status = 'error';
         this.error = err.message;
-        console.error(err.stack);
+        console.error(err);
     }
 
-    closed() {
-        this.status = 'closed';
-        console.log('closed');
-    }
-
-    updated(type, value) {
+    _updated(type, value) {
         if (type === 'exists') {
             console.log('new message(s) ' + value);
         } else if(type === 'expunge') {
@@ -93,11 +97,11 @@ module.exports = class MailStore {
         } else if (type === 'fetch') {
             // if (notjunk)
             this.notif = new Notification('New Message');
-            this.loadMessageList(value['#']);
+            this._loadMessageList(value['#']);
         }
     }
 
-    authenticated() {
+    _authenticated() {
         this.status = 'connected';
         this.client.listMailboxes().then((mailboxes)=> {
             if (mailboxes.root && !mailboxes.name && !mailboxes.length) {
@@ -110,19 +114,21 @@ module.exports = class MailStore {
 
         this.client.selectMailbox('INBOX').then((mailboxInfo)=> {
             this.mailboxInfo = mailboxInfo;
-            return this.loadMessageList(this.sequence);
+            return this._loadMessageList();
         });
     }
-    loadMessageList() {
-        var start = this.loadOffset ? this.mailboxInfo.exists - this.loadOffset - 1 : '*';
-        this.loadOffset += 40;
-        var end = this.mailboxInfo.exists - this.loadOffset;
-        if (this.mailboxInfo.exists) {
-            this.sequence = end + ':' + start;
+    _loadMessageList(sequence) {
+        if (!sequence) {
+            var start = this.loadOffset ? this.mailboxInfo.exists - this.loadOffset - 1 : '*';
+            this.loadOffset += 40;
+            var end = this.mailboxInfo.exists - this.loadOffset;
+            if (this.mailboxInfo.exists) {
+                sequence = end + ':' + start;
+            }
         }
         return this.client.listMessages(
             'INBOX',
-            this.sequence,
+            sequence,
             ['uid', 'flags', 'envelope', 'bodystructure']
         ).then((messages)=> {
             this.messages.replace(this.messages.concat(messages.map((message)=> {
@@ -148,14 +154,12 @@ module.exports = class MailStore {
         }
     }
     loadMore() {
-        this.loadMessageList();
+        this._loadMessageList();
     }
     orderMessages() {
         this.messages.replace(this.messages.sort((m1, m2)=> {
             return new Date(m2.envelope.date).getTime() - new Date(m1.envelope.date).getTime();
         }));
-        console.log(this.messages[0].envelope.date)
-        console.log(this.messages[1].envelope.date)
     }
     findMessageById(id) {
         return this.messages.find((msg)=> msg.id == id);

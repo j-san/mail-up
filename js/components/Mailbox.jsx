@@ -6,9 +6,17 @@ var MailFolderList = require('./MailFolderList.jsx');
 
 
 module.exports = class Mailbox extends React.Component {
+    componentWillReceiveProps(props) {
+        this.selectFolder(props);
+    }
     componentWillMount() {
-        if (this.props.accounts[0]) {
-            this.account = this.props.accounts[0];
+        this.selectFolder(this.props);
+    }
+    selectFolder(props) {
+        this.account = props.account;
+        console.log(this.account)
+        if (!this.account && props.accounts[0]) {
+            this.account = props.accounts[0];
         }
     }
     render() {

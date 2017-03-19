@@ -38,9 +38,9 @@ module.exports = observer(class MessageView extends React.Component {
                     <div className="pull-right">
                         <a href={`#/messages/${this.props.model.id}/reply`} title="reply">&lt;</a>
                         {'  '}
-                        <a href={`#/messages/${this.props.model.id}/reply-all`} title="reply all">&lt;&lt;</a>
+                        <a href={`#/messages/${this.props.model.id}/reply-all`} title="reply all">&laquo;</a>
                         {'  '}
-                        <a href={`#/messages/${this.props.model.id}/forward`} title="forward">&gt;&gt;</a>
+                        <a href={`#/messages/${this.props.model.id}/forward`} title="forward">&raquo;</a>
                     </div>
                 </div>
                 <Body body={body} />

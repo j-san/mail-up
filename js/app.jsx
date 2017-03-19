@@ -8,7 +8,7 @@ var RunCommandMixin = require('./mixins/run-command-mixin');
 
 var Message = require('./models/Message');
 var Configuration = require('./models/Configuration');
-var MailStore = require('./models/MailStore');
+var MailAccount = require('./models/MailAccount');
 
 var Mailbox = require('./components/Mailbox.jsx');
 var WriteMessage = require('./components/WriteMessage.jsx');
@@ -25,15 +25,15 @@ store.configuration = new Configuration();
 store.configuration.load();
 
 store.accounts = store.configuration.accounts.map((config)=> {
-    var mailStore = new MailStore(config);
+    var account = new MailAccount(config);
 
-    mailStore.password = store.configuration.passwords[config.user];
-    if (!mailStore.password) {
+    account.password = store.configuration.passwords[config.user];
+    if (!account.password) {
         location.assign('#/password');
     } else {
-        mailStore.connect();
+        account.connect();
     }
-    return mailStore;
+    return account;
 });
 
 RunCommandMixin.init([{
@@ -75,16 +75,12 @@ ReactDOM.render(<HashRouter>
                     return <Mailbox accounts={store.accounts} />;
                 }}>
                 </Route>
-                <Route path="/messages/previous" render={()=> {
-                    store.accounts.selected.messages.selectPrevious();
-                    location.assign('#/messages/' + store.accounts.selected.messages.selected.id);
-                    return null;
-                }}>
-                </Route>
-                <Route path="/messages/next" render={()=> {
-                    store.accounts.selected.messages.selectNext();
-                    location.assign('#/messages/' + store.accounts.selected.messages.selected.id);
-                    return null;
+                <Route path="/folder/:account/:folder" exact render={({match: {params}})=> {
+                    var account = store.accounts.find((account)=> {
+                        return account.id == params.account;
+                    });
+                    var folder = params.folder;
+                    return <Mailbox accounts={store.accounts} account={account} folder={folder} />;
                 }}>
                 </Route>
                 <Route path="/messages/:id/reply" render={({match: {params}})=> {

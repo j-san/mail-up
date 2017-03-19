@@ -27,6 +27,18 @@ var Account = observer(class Account extends React.Component {
         return <div>
             <h3>{account.id}</h3>
             <FolderList collection={account.mailfolders} account={account} />
+            <div className="pull-right">
+                {(account.status == 'close' || account.status == 'error') &&
+                    <a title="connect" onClick={()=> {
+                        account.connect();
+                    }}>&crarr; </a>
+                }
+                {account.status == 'connected' &&
+                    <a title="disconnect" onClick={()=> {
+                        account.disconnect();
+                    }}>&times; </a>
+                }
+            </div>
             <i>{account.status}</i>
             {account.error &&
                 <p className="text-danger">{account.error}</p>
@@ -39,9 +51,6 @@ var Account = observer(class Account extends React.Component {
 var FolderList = observer(class FolderList extends React.Component {
 
     render() {
-        if (!this.props.collection.length) {
-            return <div className="loading">Loading...</div>;
-        }
         return <ul>
             {this.props.collection.map((folder)=> {
                 return <Folder account={this.props.account} model={folder} key={folder.path} />;
@@ -61,7 +70,7 @@ class Folder extends React.Component {
                 <FolderList account={this.props.account} collection={children}/>
             </li>;
         }
-        var href = `#/account/${this.props.account.id}/folder/${this.props.model.path}`;
+        var href = `#/folder/${this.props.account.id}/${this.props.model.path}`;
         return <li>
             <a href={href}>{this.props.model.name}</a>
         </li>;
