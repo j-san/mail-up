@@ -70,7 +70,7 @@ class Folder extends React.Component {
                 <FolderList account={this.props.account} collection={children}/>
             </li>;
         }
-        var href = `#/folder/${this.props.account.id}/${this.props.model.path}`;
+        var href = `#/messages/${this.props.account.id}/folder/${this.props.model.path}`;
         return <li>
             <a href={href}>{this.props.model.name}</a>
         </li>;

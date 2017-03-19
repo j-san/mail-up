@@ -72,86 +72,97 @@ ReactDOM.render(<HashRouter>
         <div className="page-content">
             <Switch>
                 <Route path="/messages" exact render={()=> {
-                    return <Mailbox accounts={store.accounts} />;
+                    // return <Mailbox accounts={store.accounts} />;
+                    location.assign(`#/messages/${store.accounts[0].id}`);
+                    return null;
                 }}>
                 </Route>
-                <Route path="/folder/:account/:folder" exact render={({match: {params}})=> {
+                <Route path="/messages/:account" render={({match})=> {
                     var account = store.accounts.find((account)=> {
-                        return account.id == params.account;
+                        return account.id == match.params.account;
                     });
-                    var folder = params.folder;
-                    return <Mailbox accounts={store.accounts} account={account} folder={folder} />;
-                }}>
-                </Route>
-                <Route path="/messages/:id/reply" render={({match: {params}})=> {
-                    var selected = store.accounts[0].findMessageById(params.id);
 
-                    store.edit = new Message();
-                    store.edit.envelope = Object.assign({}, selected.envelope);
-                    delete store.edit.envelope['reply-to'];
-                    delete store.edit.envelope['cc'];
-                    delete store.edit.envelope.date;
-                    delete store.edit.envelope.sender;
-                    store.edit.envelope.to = [(selected.envelope['reply-to'] || selected.envelope.from)];
-                    store.edit.envelope.from = store.accounts[0].config.user;
-                    store.edit.body = selected.body;
-                    location.assign('#/write');
-                    return null;
-                }}>
-                </Route>
-                <Route path="/messages/:id/forward" render={({match: {params}})=> {
-                    var selected = store.accounts[0].findMessageById(params.id);
+                    return <Switch>
+                        <Route path={`${match.url}folder/:folder`} render={({match})=> {
+                            var folder = match.params.folder;
+                            return <Mailbox accounts={store.accounts} account={account} folder={folder} />;
+                        }}>
+                        </Route>
+                        <Route path={`${match.url}/write`} render={()=> {
+                            if (!store.edit) {
+                                store.edit = new Message();
+                                store.edit.envelope.from = account.config.user;
+                            }
+                            return <WriteMessage model={store.edit} onSend={()=> {
+                                account.send(store.edit).then(()=> {
+                                    store.edit = null;
+                                    location.assign('#/messages');
+                                }, (e)=> {
+                                    console.error(e);
+                                });
+                            }} />;
+                        }}>
+                        </Route>
+                        <Route path={`${match.url}/:id`} render={({match})=> {
+                            var message = account.findMessageById(Number(match.params.id));
 
-                    store.edit = new Message();
-                    store.edit.envelope = Object.assign({}, selected.envelope);
-                    delete store.edit.envelope['reply-to'];
-                    delete store.edit.envelope.date;
-                    delete store.edit.envelope.sender;
-                    store.edit.envelope.from = store.accounts[0].config.user;
-                    store.edit.envelope.to = '';
-                    store.edit.body = selected.body;
-                    location.assign('#/write');
-                    return null;
-                }}>
-                </Route>
-                <Route path="/messages/:id/reply-all" render={({match: {params}})=> {
-                    var selected = store.accounts[0].findMessageById(params.id);
+                            return <switch>
+                                <Route path={`${match.url}/reply`} render={()=> {
+                                    store.edit = new Message();
+                                    store.edit.envelope = Object.assign({}, message.envelope);
+                                    delete store.edit.envelope['reply-to'];
+                                    delete store.edit.envelope['cc'];
+                                    delete store.edit.envelope.date;
+                                    delete store.edit.envelope.sender;
+                                    store.edit.envelope.to = [(message.envelope['reply-to'] || message.envelope.from)];
+                                    store.edit.envelope.from = account.config.user;
+                                    store.edit.body = message.body;
+                                    location.assign(`#/messages/${account.id}/write`);
+                                    return null;
+                                }}>
+                                </Route>
+                                <Route path={`${match.url}/forward`} render={()=> {
+                                    store.edit = new Message();
+                                    store.edit.envelope = Object.assign({}, message.envelope);
+                                    delete store.edit.envelope['reply-to'];
+                                    delete store.edit.envelope.date;
+                                    delete store.edit.envelope.sender;
+                                    store.edit.envelope.from = account.config.user;
+                                    store.edit.envelope.to = '';
+                                    store.edit.body = message.body;
+                                    location.assign(`#/messages/${account.id}/write`);
+                                    return null;
+                                }}>
+                                </Route>
+                                <Route path={`${match.url}/reply-all`} render={()=> {
+                                    store.edit = new Message();
+                                    store.edit.envelope = Object.assign({}, message.envelope);
+                                    delete store.edit.envelope['reply-to'];
+                                    delete store.edit.envelope.date;
+                                    delete store.edit.envelope.sender;
+                                    store.edit.envelope.from = account.config.user;
+                                    store.edit.envelope.to = [(message.envelope['reply-to'] || message.envelope.from)];
+                                    store.edit.body = message.body;
+                                    location.assign(`#/messages/${account.id}/write`);
+                                    return null;
+                                }}>
+                                </Route>
+                                <Route render={()=> {
+                                    if (message) {
+                                        account.loadMessage(message);
+                                    }
+                                    return <Mailbox accounts={store.accounts} account={account} selected={message} />;
+                                }}>
+                                </Route>
+                            </switch>;
+                        }} />
+                        <Route render={({match: {params}})=> {
 
-                    store.edit = new Message();
-                    store.edit.envelope = Object.assign({}, selected.envelope);
-                    delete store.edit.envelope['reply-to'];
-                    delete store.edit.envelope.date;
-                    delete store.edit.envelope.sender;
-                    store.edit.envelope.from = store.accounts[0].config.user;
-                    store.edit.envelope.to = [(selected.envelope['reply-to'] || selected.envelope.from)];
-                    store.edit.body = selected.body;
-                    location.assign('#/write');
-                    return null;
-                }}>
-                </Route>
-                <Route path="/messages/:id" render={({match: {params}})=> {
-                    var selected = store.accounts[0].findMessageById(params.id);
-                    if (selected) {
-                        store.accounts[0].loadMessage(selected);
-                    }
-                    return <Mailbox accounts={store.accounts} selected={selected} />;
-                }}>
-                </Route>
-                <Route path="/write" render={()=> {
-                    if (!store.edit) {
-                        store.edit = new Message();
-                        store.edit.envelope.from = store.accounts[0].config.user;
-                    }
-                    return <WriteMessage model={store.edit} onSend={()=> {
-                        store.accounts[0].send(store.edit).then(()=> {
-                            store.edit = null;
-                            location.assign('#/messages');
-                        }, (e)=> {
-                            console.error(e);
-                        });
-                    }} />;
-                }}>
-                </Route>
+                            return <Mailbox accounts={store.accounts} account={account} />;
+                        }}>
+                        </Route>
+                    </Switch>;
+                }} />
                 <Route path="/password" render={()=> {
                     return <Password configuration={store.configuration} onSave={()=> {
                         store.configuration.save();

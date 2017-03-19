@@ -14,9 +14,9 @@ module.exports = observer(class MessageList extends React.Component {
         return <div className={selected ? 'full-width' : ''}>
             <div className={'message-list' + (selected ? ' side-content' : '')}>
                 <div>
-                {this.props.collection.map(function(msg) {
+                {this.props.collection.map((msg)=> {
                     var active = (selected && msg.id === selected.id ? ' active' : '');
-                    return <MessageItem key={msg.id} model={msg} active={active} />;
+                    return <MessageItem key={msg.id} model={msg} active={active} account={this.props.account} />;
                 })}
                 </div>
                 {this.props.collection.length > 0 &&
@@ -27,7 +27,7 @@ module.exports = observer(class MessageList extends React.Component {
             </div>
             {selected &&
             <div className="message-view">
-                <MessageView model={selected} />
+                <MessageView model={selected} account={this.props.account} />
             </div>
             }
         </div>;
@@ -45,7 +45,7 @@ class MessageItem extends React.Component {
             return flag.replace('\\', '');
         });
 
-        return <a className={`media ${this.props.active}`} href={`#/messages/${model.id}`}>
+        return <a className={`media ${this.props.active}`} href={`#/messages/${this.props.account.id}/${model.id}`}>
             <div className={['media-body'].concat(flags).join(' ')}>
                 <span className="message-item-date pull-right" title={date.format('lll')}>{date.calendar()}</span>
                 <strong className="media-heading">{model.envelope.subject}</strong>
