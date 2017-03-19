@@ -17,7 +17,12 @@ module.exports = class Mailbox extends React.Component {
                 <MailFolderList collection={this.props.accounts} />
             </div>
             {this.account &&
-                <MessageList collection={this.account.messages} selected={this.props.selected} />
+                <MessageList
+                    collection={this.account.messages}
+                    selected={this.props.selected}
+                    loadMore={()=> {
+                        this.account.loadMore();
+                    }} />
             }
         </section>;
     }

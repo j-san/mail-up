@@ -2,6 +2,7 @@
 var {observable, extendObservable} = require('mobx');
 var ImapClient = require('emailjs-imap-client');
 var SmtpClient = require('emailjs-smtp-client');
+var moment = require('moment');
 
 var Message = require('./Message');
 var pkg = require('../../package');
@@ -11,11 +12,12 @@ module.exports = class MailStore {
 
     constructor(config) {
         this.config = config;
-        this.messages = observable([]);
-        this.mailfolders = observable([]);
         extendObservable(this, {
-            status: ''
-    });
+            status: '',
+            messages: [],
+            mailfolders: []
+        });
+        this.loadOffset = 0;
     }
 
     get id() {
@@ -108,22 +110,25 @@ module.exports = class MailStore {
 
         this.client.selectMailbox('INBOX').then((mailboxInfo)=> {
             this.mailboxInfo = mailboxInfo;
-            this.sequence = '1:20';
-            if (this.mailboxInfo.exists) {
-                this.sequence = '*:' + (this.mailboxInfo.exists - 40);
-            }
             return this.loadMessageList(this.sequence);
         });
     }
-    loadMessageList(sequence) {
+    loadMessageList() {
+        var start = this.loadOffset ? this.mailboxInfo.exists - this.loadOffset - 1 : '*';
+        this.loadOffset += 40;
+        var end = this.mailboxInfo.exists - this.loadOffset;
+        if (this.mailboxInfo.exists) {
+            this.sequence = end + ':' + start;
+        }
         return this.client.listMessages(
-            'INBOX', 
-            sequence, 
+            'INBOX',
+            this.sequence,
             ['uid', 'flags', 'envelope', 'bodystructure']
         ).then((messages)=> {
-            messages.forEach((message)=> {
-                this.messages.push(new Message(message));
-            });
+            this.messages.replace(this.messages.concat(messages.map((message)=> {
+                return new Message(message);
+            })));
+            this.orderMessages();
             return messages;
         });
     }
@@ -135,7 +140,6 @@ module.exports = class MailStore {
                 'INBOX',
                 message.uid,
                 query,
-                // ['uid', 'flags'],
                 {byUid: true}
             ).then((messages)=> {
                 console.log('body loaded', messages);
@@ -143,7 +147,16 @@ module.exports = class MailStore {
             });
         }
     }
-
+    loadMore() {
+        this.loadMessageList();
+    }
+    orderMessages() {
+        this.messages.replace(this.messages.sort((m1, m2)=> {
+            return new Date(m2.envelope.date).getTime() - new Date(m1.envelope.date).getTime();
+        }));
+        console.log(this.messages[0].envelope.date)
+        console.log(this.messages[1].envelope.date)
+    }
     findMessageById(id) {
         return this.messages.find((msg)=> msg.id == id);
     }

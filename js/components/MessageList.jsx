@@ -13,15 +13,16 @@ module.exports = observer(class MessageList extends React.Component {
 
         return <div className={selected ? 'full-width' : ''}>
             <div className={'message-list' + (selected ? ' side-content' : '')}>
-                {this.props.collection.length === 0 ?
-                    <div className="loading">Loading...</div>
-                :
-                    <div>
-                    {this.props.collection.map(function(msg) {
-                        var active = (selected && msg.id === selected.id ? ' active' : '');
-                        return <MessageItem key={msg.id} model={msg} active={active} />;
-                    })}
-                    </div>
+                <div>
+                {this.props.collection.map(function(msg) {
+                    var active = (selected && msg.id === selected.id ? ' active' : '');
+                    return <MessageItem key={msg.id} model={msg} active={active} />;
+                })}
+                </div>
+                {this.props.collection.length > 0 &&
+                <div onClick={()=> {this.props.loadMore();}}>
+                    load more
+                </div>
                 }
             </div>
             {selected &&
@@ -38,7 +39,8 @@ class MessageItem extends React.Component {
     render() {
         var model = this.props.model;
         var env = model.envelope;
-        var date = moment(model.envelope.date);
+        // var date = moment(model.envelope.date, 'Mon, 13 Mar 2017 16:14:19 +0000');
+        var date = moment(new Date(model.envelope.date));
         var flags = model.flags.map(function (flag) {
             return flag.replace('\\', '');
         });

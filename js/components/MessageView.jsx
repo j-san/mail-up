@@ -35,11 +35,13 @@ module.exports = observer(class MessageView extends React.Component {
             content = <div className="message-content">
                 <div className="message-envelope">
                     <Envelope model={envelope} />
-                    <a href={`#/messages/${this.props.model.id}/reply`} title="reply">R</a>
-                    {'  '}
-                    <a href={`#/messages/${this.props.model.id}/forward`} title="forward">F</a>
-                    {'  '}
-                    <a href={`#/messages/${this.props.model.id}/reply-all`} title="reply all">RA</a>
+                    <div className="pull-right">
+                        <a href={`#/messages/${this.props.model.id}/reply`} title="reply">&lt;</a>
+                        {'  '}
+                        <a href={`#/messages/${this.props.model.id}/reply-all`} title="reply all">&lt;&lt;</a>
+                        {'  '}
+                        <a href={`#/messages/${this.props.model.id}/forward`} title="forward">&gt;&gt;</a>
+                    </div>
                 </div>
                 <Body body={body} />
             </div>;
@@ -68,7 +70,7 @@ module.exports = observer(class MessageView extends React.Component {
 class Envelope extends React.Component {
     render() {
         return <div className="message-headers">
-            <p>{moment(this.props.model.date).format('LLL')}</p>
+            <p>{moment(new Date(this.props.model.date)).format('LLL')}</p>
             <HeaderField name="From" values={this.props.model.from} />
             <HeaderField name="To" values={this.props.model.to} />
             <HeaderField name="CC" values={this.props.model.cc} />
