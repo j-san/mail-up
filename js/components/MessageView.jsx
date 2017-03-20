@@ -10,59 +10,43 @@ module.exports = observer(class MessageView extends React.Component {
 
     constructor(props) {
         super();
-        this.outputFormats = ['standard', 'json', 'raw'];
         extendObservable(this, {
-            output: 'standard'
+            outputJson: false
         });
     }
-    showFormat(format) {
-        this.output = format;
+    toggleJson() {
+        console.log(this.outputJson)
+        this.outputJson = !this.outputJson;
     }
     render() {
         var envelope = this.props.model.envelope;
         var body = this.props.model.body;
         var content;
 
-        if (this.output == 'json') {
-            content = <pre>
-                {JSON.stringify(this.props.model, null, 2)}
-            </pre>;
-        } else if (this.output == 'raw') {
-            content = <pre>
-                {this.props.model.raw}
-            </pre>;
-        } else {
-            content = <div className="message-content">
-                <div className="message-envelope">
-                    <Envelope model={envelope} />
-                    <div className="pull-right">
-                        <a href={`#/messages/${this.props.account.id}/${this.props.model.id}/reply`} title="reply">&lt;</a>
-                        {'  '}
-                        <a href={`#/messages/${this.props.account.id}/${this.props.model.id}/reply-all`} title="reply all">&laquo;</a>
-                        {'  '}
-                        <a href={`#/messages/${this.props.account.id}/${this.props.model.id}/forward`} title="forward">&raquo;</a>
-                    </div>
-                </div>
-                <Body body={body} />
-            </div>;
-        }
-
         return <div>
             <div className="message-header">
                 <div className="btn-group-vertical pull-right" role="group" aria-label="Output Format">
-                    {this.outputFormats.map((format)=> {
-                        var handler = this.showFormat.bind(this, format);
-                        var classNames = ['btn', 'btn-default'];
-                        if (format === this.output) {
-                            classNames.push('active');
-                        }
-
-                        return <button onClick={handler} key={format} className={classNames.join(' ')}>{format}</button>;
-                    })}
+                    <button onClick={this.toggleJson.bind(this)} className={`btn btn-default ${this.outputJson ? 'active' : ''}`}>json</button>
                 </div>
                 <h2>{envelope.subject}</h2>
             </div>
-            {content}
+            {this.outputJson ?
+                <pre>
+                    {JSON.stringify(this.props.model, null, 2)}
+                </pre>
+            :
+                <div className="message-content">
+                    <div className="message-envelope">
+                        <Envelope model={envelope} />
+                        <div className="pull-right">
+                            <a href={`#/messages/${this.props.account.id}/${this.props.model.id}/reply`} title="reply"> &lt; </a>
+                            <a href={`#/messages/${this.props.account.id}/${this.props.model.id}/reply-all`} title="reply all"> &laquo; </a>
+                            <a href={`#/messages/${this.props.account.id}/${this.props.model.id}/forward`} title="forward"> &raquo; </a>
+                        </div>
+                    </div>
+                    <Body body={body} />
+                </div>
+            }
         </div>;
     }
 })
@@ -136,14 +120,8 @@ var Body = observer(class Body extends React.Component {
         return <div className="message-body">
             <div className="alternatives">
                 <div className="btn-group" role="group" aria-label="Format">
-                    {this.props.body && this.props.body.map((alt)=> {
-                        var handler = this.showAlternative.bind(this, alt);
-                        var classNames = ['btn', 'btn-default'];
-                        if (alt === alternative) {
-                            classNames.push('active');
-                        }
-
-                        return <button onClick={handler} key={alt.id} className={classNames.join(' ')}>{alt.id + ' - ' + alt.type}</button>;
+                    {this.props.body && this.props.body.length > 1 && this.props.body.map((alt)=> {
+                        return <button onClick={this.showAlternative.bind(this, alt)} key={alt.id} className={`btn btn-default ${alt === alternative ? 'active' : ''}`}>{alt.id + ' - ' + alt.type}</button>;
                     })}
                 </div>
             </div>

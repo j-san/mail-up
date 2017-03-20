@@ -144,12 +144,13 @@ module.exports = class MailAccount {
             // query = []
             this.client.listMessages(
                 'INBOX',
-                message.uid,
-                query,
-                {byUid: true}
+                message.id,
+                ['flags'/*, 'BODY[]'*/].concat(query)
+                // {byUid: true}
             ).then((messages)=> {
                 console.log('body loaded', messages);
                 message.parseBody(messages[0]);
+                message.flags.replace(messages[0].flags);
             });
         }
     }

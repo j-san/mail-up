@@ -18,7 +18,7 @@ module.exports = class Mailbox extends React.Component {
                     selected={this.props.selected}
                      account={this.props.account}
                     loadMore={()=> {
-                        this.account.loadMore();
+                        this.props.account.loadMore();
                     }} />
             }
         </section>;

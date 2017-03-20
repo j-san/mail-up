@@ -31,12 +31,12 @@ var Account = observer(class Account extends React.Component {
                 {(account.status == 'close' || account.status == 'error') &&
                     <a title="connect" onClick={()=> {
                         account.connect();
-                    }}>&crarr; </a>
+                    }}> &crarr; </a>
                 }
                 {account.status == 'connected' &&
                     <a title="disconnect" onClick={()=> {
                         account.disconnect();
-                    }}>&times; </a>
+                    }}> &times; </a>
                 }
             </div>
             <i>{account.status}</i>

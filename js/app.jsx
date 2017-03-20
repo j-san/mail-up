@@ -3,8 +3,7 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var {Route, Switch} = require('react-router');
 var {HashRouter} = require('react-router-dom');
-
-var RunCommandMixin = require('./mixins/run-command-mixin');
+var Mousetrap = require('mousetrap');
 
 var Message = require('./models/Message');
 var Configuration = require('./models/Configuration');
@@ -36,35 +35,14 @@ store.accounts = store.configuration.accounts.map((config)=> {
     return account;
 });
 
-RunCommandMixin.init([{
-    bind: ['w', 'ctrl+n'],
-    label: 'Write message',
-    navigate: 'write'
-}, {
-    bind: 'b',
-    label: 'About',
-    navigate: 'about'
-}, {
-    bind: 'h',
-    label: 'Help',
-    navigate: 'help'
-}, {
-    bind: 'c',
-    label: 'Configure',
-    navigate: 'configure'
-}, {
-    bind: 'esc',
-    label: 'Back to messages',
-    navigate: 'messages'
-}, {
-    bind: 'n',
-    label: 'Next mail',
-    navigate: 'messages/next'
-}, {
-    bind: 'p',
-    label: 'Previous mail',
-    navigate: 'messages/previous'
-}]);
+Mousetrap.bind('b', location.assign.bind(location, '#/about'));
+Mousetrap.bind('h',location.assign.bind(location, '#/help'));
+Mousetrap.bind('c', location.assign.bind(location, '#/configure'));
+Mousetrap.bind('esc', location.assign.bind(location, '#/messages'));
+
+Mousetrap.bind(['w', 'ctrl+n'], location.assign.bind(location, '#/write'));
+Mousetrap.bind(['n', 'down'], location.assign.bind(location, '#/messages/next'));
+Mousetrap.bind(['p', 'up'], location.assign.bind(location, '#/messages/previous'));
 
 ReactDOM.render(<HashRouter>
     <div>
@@ -185,8 +163,8 @@ ReactDOM.render(<HashRouter>
                     return <Help />;
                 }}>
                 </Route>
-                <Route render={({location: loc})=> {
-                    console.log('not found', loc.pathname);
+                <Route render={(props)=> {
+                    console.log('not found', props.location.pathname, props);
                     location.assign('#/messages');
                     return null;
                 }}>

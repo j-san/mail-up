@@ -63,11 +63,11 @@ module.exports = class Message {
             parts = [].concat.apply([], parts); // flatten
             return parts;
         } else {
-            var key = struct.part || struct.id || 0;
+            var key = struct.part || struct.id || null;
             return {
                 id: key,
                 type: struct.type,
-                query: 'body[' + key + ']',
+                query: key ? 'body[' + key + ']' : 'body[1]',
                 encoding: struct.encoding,
                 charset: struct.parameters && struct.parameters.charset
             };
