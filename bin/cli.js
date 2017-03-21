@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 
 var proc = require('child_process');
 var path = require('path');

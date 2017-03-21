@@ -3,6 +3,9 @@
   "version": "0.2.0",
   "description": "",
   "main": "index.js",
+  "bin": {
+    "mail-up": "bin/cli.js"
+  },
   "scripts": {
     "mocha": "mocha",
     "lint": "eslint js/ test/",
