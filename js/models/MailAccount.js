@@ -1,14 +1,13 @@
 
-var {observable, extendObservable} = require('mobx');
+var {extendObservable} = require('mobx');
 var ImapClient = require('emailjs-imap-client');
 var SmtpClient = require('emailjs-smtp-client');
-var moment = require('moment');
 
 var Message = require('./Message');
 var pkg = require('../../package');
 
 
-module.exports = class MailAccount {
+class MailAccount {
 
     constructor(config) {
         this.config = config;
@@ -79,7 +78,7 @@ module.exports = class MailAccount {
             this.client.close().then(()=> {
                 this.status = 'close';
             });
-        })
+        });
         this.smtp.close();
     }
 
@@ -104,18 +103,21 @@ module.exports = class MailAccount {
     _authenticated() {
         this.status = 'connected';
         this.client.listMailboxes().then((mailboxes)=> {
-            if (mailboxes.root && !mailboxes.name && !mailboxes.length) {
-                this.mailfolders.replace(mailboxes.children);
-            } else {
-                this.mailfolders.replace(mailboxes);
-            }
-            // console.log('mailfolders loaded', this.mailfolders);
+            this._parseMailbox(mailboxes);
         });
 
         this.client.selectMailbox('INBOX').then((mailboxInfo)=> {
             this.mailboxInfo = mailboxInfo;
             return this._loadMessageList();
         });
+    }
+    _parseMailbox(mailboxes) {
+        if (mailboxes.root && !mailboxes.name && !mailboxes.length) {
+            this.mailfolders.replace(mailboxes.children);
+        } else {
+            this.mailfolders.replace(mailboxes);
+        }
+        // console.log('mailfolders loaded', this.mailfolders);
     }
     _loadMessageList(sequence) {
         if (!sequence) {
@@ -173,7 +175,7 @@ module.exports = class MailAccount {
             this.smtp.onready = ()=> {
                 console.log('sending mail body');
                 this.smtp.send(`Subject: ${message.envelope.subject}\r\n`);
-                this.smtp.send("\r\n");
+                this.smtp.send('\r\n');
                 this.smtp.send(message.body);
                 this.smtp.end();
                 this.smtp.onready = noop;
@@ -201,3 +203,5 @@ module.exports = class MailAccount {
         });
     }
 }
+
+module.exports = MailAccount;

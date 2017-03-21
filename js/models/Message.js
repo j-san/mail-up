@@ -3,10 +3,10 @@ var {extendObservable} = require('mobx');
 var QuotedPrintable = require('quoted-printable');
 // var Envelope = require('./envelope');
 
-module.exports = class Message {
+class Message {
 
     constructor(attrs) {
-        attrs = attrs || {};
+        attrs = attrs || {};
         extendObservable(this, {
             id: attrs['#'],
             uid: attrs['uid'],
@@ -74,3 +74,5 @@ module.exports = class Message {
         }
     }
 }
+
+module.exports = Message;

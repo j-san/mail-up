@@ -21,7 +21,6 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "devtron": "^1.4.0",
-    "electron": "^1.6.2",
     "electron-packager": "^8.5.2",
     "eslint": "^3.16.1",
     "eslint-plugin-react": "^6.10.0",
@@ -29,6 +28,7 @@
   },
   "dependencies": {
     "bootstrap": "^3.3.4",
+    "electron": "^1.6.2",
     "emailjs-imap-client": "^2.0.3",
     "emailjs-smtp-client": "^1.0.0",
     "jquery": "^3.1.1",
@@ -45,7 +45,6 @@
     "react-router-dom": "^4.0.0-beta.6"
   },
   "eslintConfig": {
-    "parser": "jsx-eslint",
     "extends": [
       "eslint:recommended",
       "plugin:react/recommended"
@@ -53,7 +52,8 @@
     "env": {
       "es6": true,
       "browser": true,
-      "jest": true
+      "node": true,
+      "mocha": true
     },
     "ecmaFeatures": {
       "jsx": true

@@ -2,7 +2,7 @@
 var {extendObservable} = require('mobx');
 
 
-module.exports = class Configuration {
+class Configuration {
     constructor() {
         extendObservable(this, {
             accounts: [],
@@ -41,3 +41,5 @@ module.exports = class Configuration {
         }
     }
 }
+
+module.exports = Configuration;
