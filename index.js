@@ -1,6 +1,5 @@
 
 const path = require('path');
-const glob = require('glob');
 const electron = require('electron');
 
 const BrowserWindow = electron.BrowserWindow;
@@ -15,19 +14,19 @@ var mainWindow = null;
 function initialize () {
     app.on('ready', function () {
         createWindow();
-    })
+    });
 
     app.on('window-all-closed', function () {
         if (process.platform !== 'darwin') {
             app.quit();
         }
-    })
+    });
 
     app.on('activate', function () {
         if (mainWindow === null) {
             createWindow();
         }
-    })
+    });
 }
 
 initialize();
