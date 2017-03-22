@@ -35,10 +35,9 @@ module.exports = observer(class MessageList extends React.Component {
 });
 
 
-class MessageItem extends React.Component {
+var MessageItem = observer(class MessageItem extends React.Component {
     render() {
         var model = this.props.model;
-        var env = model.envelope;
         // var date = moment(model.envelope.date, 'Mon, 13 Mar 2017 16:14:19 +0000');
         var date = moment(new Date(model.envelope.date));
         var flags = model.flags.map(function (flag) {
@@ -52,4 +51,4 @@ class MessageItem extends React.Component {
             </div>
         </a>;
     }
-}
+});

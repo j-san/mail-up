@@ -62,7 +62,7 @@ class MailAccount {
                 {
                     auth: {
                         user: this.config.user,
-                        pass: this.config.password
+                        pass: this.config.password || this.password
                     },
                     id: {
                         name: pkg.name,
@@ -166,6 +166,9 @@ class MailAccount {
     }
     findMessageById(id) {
         return this.messages.find((msg)=> msg.id == id);
+    }
+    findMessageIndexById(id) {
+        return this.messages.findIndex((msg)=> msg.id == id);
     }
     send(message) {
         return new Promise((resolve, reject)=> {

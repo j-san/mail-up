@@ -40,9 +40,27 @@ Mousetrap.bind('h',location.assign.bind(location, '#/help'));
 Mousetrap.bind('c', location.assign.bind(location, '#/configure'));
 Mousetrap.bind('esc', location.assign.bind(location, '#/messages'));
 
-Mousetrap.bind(['w', 'ctrl+n'], location.assign.bind(location, '#/write'));
-Mousetrap.bind(['n', 'down'], location.assign.bind(location, '#/messages/next'));
-Mousetrap.bind(['p', 'up'], location.assign.bind(location, '#/messages/previous'));
+Mousetrap.bind(['w', 'ctrl+n'], ()=> {
+    if (store.currentAccount) {
+        location.assign(`#/messages/${store.currentAccount.id}/write`);
+    }
+});
+Mousetrap.bind(['n', 'down'], ()=> {
+    var index = store.currentAccount.findMessageIndexById(store.currentMessage.id);
+    var newMessage = store.currentAccount.messages[index + 1];
+
+    if (newMessage) {
+        location.assign(`#/messages/${store.currentAccount.id}/${newMessage.id}`);
+    }
+});
+Mousetrap.bind(['p', 'up'], ()=> {
+    var index = store.currentAccount.findMessageIndexById(store.currentMessage.id);
+    var newMessage = store.currentAccount.messages[index - 1];
+
+    if (newMessage) {
+        location.assign(`#/messages/${store.currentAccount.id}/${newMessage.id}`);
+    }
+});
 
 ReactDOM.render(<HashRouter>
     <div>
@@ -56,7 +74,7 @@ ReactDOM.render(<HashRouter>
                 }}>
                 </Route>
                 <Route path="/messages/:account" render={({match})=> {
-                    var account = store.accounts.find((account)=> {
+                    var account = store.currentAccount = store.accounts.find((account)=> {
                         return account.id == match.params.account;
                     });
 
@@ -82,7 +100,7 @@ ReactDOM.render(<HashRouter>
                         }}>
                         </Route>
                         <Route path={`${match.url}/:id`} render={({match})=> {
-                            var message = account.findMessageById(Number(match.params.id));
+                            var message = store.currentMessage = account.findMessageById(Number(match.params.id));
 
                             return <switch>
                                 <Route path={`${match.url}/reply`} render={()=> {
@@ -134,8 +152,7 @@ ReactDOM.render(<HashRouter>
                                 </Route>
                             </switch>;
                         }} />
-                        <Route render={({match: {params}})=> {
-
+                        <Route render={()=> {
                             return <Mailbox accounts={store.accounts} account={account} />;
                         }}>
                         </Route>
