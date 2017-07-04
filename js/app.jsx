@@ -1,4 +1,3 @@
-
 var React = require('react');
 var ReactDOM = require('react-dom');
 var {Route, Switch} = require('react-router');
@@ -42,7 +41,7 @@ Mousetrap.bind('esc', location.assign.bind(location, '#/messages'));
 
 Mousetrap.bind(['w', 'ctrl+n'], ()=> {
     if (store.currentAccount) {
-        location.assign(`#/messages/${store.currentAccount.id}/write`);
+        location.assign(`#/messages/${encodeURIComponent(store.currentAccount.id)}/write`);
     }
 });
 Mousetrap.bind(['n', 'down'], ()=> {
@@ -50,7 +49,7 @@ Mousetrap.bind(['n', 'down'], ()=> {
     var newMessage = store.currentAccount.messages[index + 1];
 
     if (newMessage) {
-        location.assign(`#/messages/${store.currentAccount.id}/${newMessage.id}`);
+        location.assign(`#/messages/${encodeURIComponent(store.currentAccount.id)}/${newMessage.id}`);
     }
 });
 Mousetrap.bind(['p', 'up'], ()=> {
@@ -58,7 +57,7 @@ Mousetrap.bind(['p', 'up'], ()=> {
     var newMessage = store.currentAccount.messages[index - 1];
 
     if (newMessage) {
-        location.assign(`#/messages/${store.currentAccount.id}/${newMessage.id}`);
+        location.assign(`#/messages/${encodeURIComponent(store.currentAccount.id)}/${newMessage.id}`);
     }
 });
 
@@ -69,7 +68,7 @@ ReactDOM.render(<HashRouter>
             <Switch>
                 <Route path="/messages" exact render={()=> {
                     // return <Mailbox accounts={store.accounts} />;
-                    location.assign(`#/messages/${store.accounts[0].id}`);
+                    location.assign(`#/messages/${encodeURIComponent(store.accounts[0].id)}`);
                     return null;
                 }}>
                 </Route>
