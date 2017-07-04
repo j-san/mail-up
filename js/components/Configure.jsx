@@ -12,7 +12,24 @@ module.exports = observer(class Configure extends React.Component {
         });
     }
     componentDidMount() {
-        this.config = JSON.stringify(this.props.model.accounts, null, 2);
+        if (this.props.model.accounts.length) {
+            this.config = JSON.stringify(this.props.model.accounts, null, 2);
+        } else {
+            this.config = JSON.stringify([{
+                'user': '',
+                'imap': {
+                    'host': '',
+                    'port': 993
+                },
+                'smtp': {
+                    'host': '',
+                    'port': 587
+                },
+                'useSecureTransport': true,
+                'ignoreTLS': false,
+                'requireTLS': false
+            }], null, 2);
+        }
     }
     onChange(evt) {
         this.config = evt.target.value;
