@@ -1,4 +1,3 @@
-
 var {extendObservable} = require('mobx');
 var ImapClient = require('emailjs-imap-client');
 var SmtpClient = require('emailjs-smtp-client');
@@ -40,7 +39,10 @@ class MailAccount {
                     id: {
                         name: pkg.name,
                         version: pkg.version
-                    }
+                    },
+                    useSecureTransport: this.config.useSecureTransport,
+                    ignoreTLS: this.config.ignoreTLS,
+                    requireTLS: this.config.requireTLS,
                 }
             );
 
